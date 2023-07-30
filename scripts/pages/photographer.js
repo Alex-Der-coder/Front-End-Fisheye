@@ -50,7 +50,7 @@ getPhotographerInfo(photographerId)
     .then(photographer => {
         // Afficher les informations du photographe sur la page
         const aboutMeDiv = document.querySelector('.photograph-header');
-        aboutMeDiv.innerHTML += `
+        aboutMeDiv.innerHTML = `
         <article data-photographer-id="${photographer.id}">
             <img src="${photographer.portrait}" alt="${photographer.name}">
             <h2>${photographer.name}</h2>
