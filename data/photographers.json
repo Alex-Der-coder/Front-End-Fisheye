@@ -8,7 +8,7 @@
 			"tagline": "Voir le beau dans le quotidien",
 			"price": 400,
 			"pictures": [
-				"Front-End-Fisheye/assets/Mimi/Animals_Rainbow.jpg",
+				"../assets/Mimi/Animals_Rainbow.jpg",
 				"../assets/Mimi/Travel_Lonesome.jpg",
 				"../assets/Mimi/Event_SeasideWedding.jpg",
 				"../assets/Mimi/Portrait_Background.jpg",
