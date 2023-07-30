@@ -44,7 +44,25 @@ h1 {
     font-size: 36px;
 }
 
-.photographer_section article img {
+.photographer_section article img , article img {
     height: 200px;
     width: 200px;
+    border-radius: 50%;
+    object-fit: cover;
 }
+
+.thumb {
+width: 350px;
+height: 350px;
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Colonnes de 300px de largeur */
+    gap: 20px; /* Espacement entre les images */
+  }
+
+  .display_none_decoration {
+    text-decoration: none;
+    color: black;
+  }

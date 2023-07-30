@@ -7,7 +7,15 @@
 			"country": "UK",
 			"tagline": "Voir le beau dans le quotidien",
 			"price": 400,
-			"portrait": "MimiKeel.jpg"
+			"pictures": [
+				"../assets/Mimi/Animals_Rainbow.jpg",
+				"../assets/Mimi/Travel_Lonesome.jpg",
+				"../assets/Mimi/Event_SeasideWedding.jpg",
+				"../assets/Mimi/Portrait_Background.jpg",
+				"../assets/Mimi/Event_PintoWedding.jpg",
+				"../assets/Mimi/Portrait_Wednesday.jpg"
+			],
+			"portrait": "../assets/photographers/MimiKeel.jpg"
 		},
 		{
 			"name": "Ellie-Rose Wilkens",
@@ -16,7 +24,7 @@
 			"country": "France",
 			"tagline": "Capturer des compositions complexes",
 			"price": 250,
-			"portrait": "EllieRoseWilkens.jpg"
+			"portrait": "../assets/photographers/EllieRoseWilkens.jpg"
 		},
 		{
 			"name": "Tracy Galindo",
@@ -25,7 +33,7 @@
 			"country": "Canada",
 			"tagline": "Photographe freelance",
 			"price": 500,
-			"portrait": "TracyGalindo.jpg"
+			"portrait": "../assets/photographers/TracyGalindo.jpg"
 		},
 		{
 			"name": "Nabeel Bradford",
@@ -34,7 +42,7 @@
 			"country": "Mexico",
 			"tagline": "Toujours aller de l'avant",
 			"price": 350,
-			"portrait": "NabeelBradford.jpg"
+			"portrait": "../assets/photographers/NabeelBradford.jpg"
 		},
 		{
 			"name": "Rhode Dubois",
@@ -43,7 +51,7 @@
 			"country": "Spain",
 			"tagline": "Je crée des souvenirs",
 			"price": 275,
-			"portrait": "RhodeDubois.jpg"
+			"portrait": "../assets/photographers/RhodeDubois.jpg"
 		},
 		{
 			"name": "Marcel Nikolic",
@@ -52,7 +60,7 @@
 			"country": "Germany",
 			"tagline": "Toujours à la recherche de LA photo",
 			"price": 300,
-			"portrait": "MarcelNikolic.jpg"
+			"portrait": "../assets/photographers/MarcelNikolic.jpg"
 		}
 	],
 	"media": [
