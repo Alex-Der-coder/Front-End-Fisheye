@@ -8,12 +8,12 @@
 			"tagline": "Voir le beau dans le quotidien",
 			"price": 400,
 			"pictures": [
-				"../assets/Mimi/Animals_Rainbow.jpg",
-				"../assets/Mimi/Travel_Lonesome.jpg",
-				"../assets/Mimi/Event_SeasideWedding.jpg",
-				"../assets/Mimi/Portrait_Background.jpg",
-				"../assets/Mimi/Event_PintoWedding.jpg",
-				"../assets/Mimi/Portrait_Wednesday.jpg"
+				"data/../assets/Mimi/Animals_Rainbow.jpg",
+				"data/../assets/Mimi/Travel_Lonesome.jpg",
+				"data/../assets/Mimi/Event_SeasideWedding.jpg",
+				"data/../assets/Mimi/Portrait_Background.jpg",
+				"data/../assets/Mimi/Event_PintoWedding.jpg",
+				"data/../assets/Mimi/Portrait_Wednesday.jpg"
 			],
 			"portrait": "../assets/photographers/MimiKeel.jpg"
 		},
