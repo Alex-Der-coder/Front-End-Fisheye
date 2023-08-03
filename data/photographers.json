@@ -7,14 +7,6 @@
 			"country": "UK",
 			"tagline": "Voir le beau dans le quotidien",
 			"price": 400,
-			"pictures": [
-				"data/../assets/Mimi/Animals_Rainbow.jpg",
-				"data/../assets/Mimi/Travel_Lonesome.jpg",
-				"data/../assets/Mimi/Event_SeasideWedding.jpg",
-				"data/../assets/Mimi/Portrait_Background.jpg",
-				"data/../assets/Mimi/Event_PintoWedding.jpg",
-				"data/../assets/Mimi/Portrait_Wednesday.jpg"
-			],
 			"portrait": "../assets/photographers/MimiKeel.jpg"
 		},
 		{
@@ -258,7 +250,7 @@
 			"id": 73434243,
 			"photographerId": 527,
 			"title": "Road into the Hill",
-			"image": "Travel_Road_into_Hill.jpg",
+			"image": "assets/Travel_Road_into_Hill.jpg",
 			"likes": 99,
 			"date": "2018-04-30",
 			"price": 45
