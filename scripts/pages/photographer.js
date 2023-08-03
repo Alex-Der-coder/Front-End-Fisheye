@@ -95,10 +95,21 @@ async function main() {
       <p>City: ${photographerAndMedia.photographer.city}</p>
       <p>Country: ${photographerAndMedia.photographer.country}</p>
     </article>
+    <div class="sort-select">
+    <label for="sort-select">Triez par :</label>
+    <select id="sort-select">
+    <option value="popular">Popularité</option>
+    <option value="recent">Récent</option>
+    <option value="title">Titre</option>
+  </select>
+    </div>
     <div class="gallery">
     </div>
   `;
   const galleryDiv = document.querySelector('.gallery');
+  const sortSelect = document.querySelector('.sort-select');
+
+
   photographerAndMedia.media.forEach(media => {
     if (media.hasOwnProperty('image')) {
       const imgElement = createImageElement(media);
@@ -108,6 +119,34 @@ async function main() {
       galleryDiv.appendChild(videoElement);
     }
   });
+
+  sortSelect.addEventListener('change', (event) => {
+    const selectedValue = event.target.value;
+    let sortedMedia;
+  
+    if (selectedValue === 'popular') {
+      sortedMedia = sortByPopularity(photographerAndMedia.media);
+    } else if (selectedValue === 'recent') {
+      sortedMedia = sortByRecent(photographerAndMedia.media);
+    } else if (selectedValue === 'title') {
+      sortedMedia = sortByTitle(photographerAndMedia.media);
+    } else {
+      sortedMedia = photographerAndMedia.media; // Pas de tri spécifié, utilisez l'ordre d'origine
+    }
+  
+    // Videz la galerie actuelle et ajoutez les éléments triés
+    galleryDiv.innerHTML = '';
+    sortedMedia.forEach(media => {
+      if (media.hasOwnProperty('image')) {
+        const imgElement = createImageElement(media);
+        galleryDiv.appendChild(imgElement);
+      } else if (media.hasOwnProperty('video')) {
+        const videoElement = createVideoElement(media);
+        galleryDiv.appendChild(videoElement);
+      }
+    });
+  });
+
 }
 
 function createImageElement(media) {
@@ -118,8 +157,13 @@ function createImageElement(media) {
   imgElement.alt = media.title;
   imgElement.classList.add('thumb');
 
+  // Ajout des attributs personnalisés à la balise figure
+  figureElement.setAttribute('data-title', media.title);
+  figureElement.setAttribute('data-likes', media.likes);
+  figureElement.setAttribute('data-date', media.date);
+
   const figCaptionElement = document.createElement('figcaption');
-  figCaptionElement.textContent  =`${media.title} ${media.likes} ❤️ `;
+  figCaptionElement.textContent = `${media.title} ${media.likes} ❤️ `;
 
   figureElement.appendChild(imgElement);
   figureElement.appendChild(figCaptionElement);
@@ -150,12 +194,36 @@ function createVideoElement(media) {
   figCaptionElement.appendChild(titleElement);
   figCaptionElement.appendChild(contentElement);
 
+  figureElement.setAttribute('data-title', media.title);
+  figureElement.setAttribute('data-likes', media.likes);
+  figureElement.setAttribute('data-date', media.date);
+
   figureElement.appendChild(videoElement);
   figureElement.appendChild(sourceElement);
   figureElement.appendChild(figCaptionElement);
 
   return figureElement;
 }
+
+
+
+
+
+// Fonction pour trier les médias par popularité (likes)
+function sortByPopularity(mediaArray) {
+  return mediaArray.slice().sort((a, b) => b.likes - a.likes);
+}
+
+// Fonction pour trier les médias par récence (date)
+function sortByRecent(mediaArray) {
+  return mediaArray.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
+// Fonction pour trier les médias par titre
+function sortByTitle(mediaArray) {
+  return mediaArray.slice().sort((a, b) => a.title.localeCompare(b.title));
+}
+
 
 main();
 
