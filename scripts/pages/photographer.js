@@ -89,7 +89,7 @@ async function main() {
   const aboutMeDiv = document.querySelector('.photograph-header');
   aboutMeDiv.innerHTML += `
     <article data-photographer-id="${photographerId}">
-      <img src="${photographerAndMedia.photographer.portrait}" alt="${photographerAndMedia.photographer.name}">
+      <img src="data/${photographerAndMedia.photographer.portrait}" alt="${photographerAndMedia.photographer.name}">
       <h2>${photographerAndMedia.photographer.name}</h2>
       <p>${photographerAndMedia.photographer.tagline}</p>
       <p>City: ${photographerAndMedia.photographer.city}</p>
