@@ -33,29 +33,55 @@ function photographerTemplate(photographer) {
         tagline: photographer.tagline,
         price: photographer.price,
         id: photographer.id,
-         // Use 'portrait' property as the image URL
-        // Add other properties you need
         getUserCardDOM: function () {
-            const card = document.createElement('div');
+            const card = document.createElement('article');
             card.classList.add('photographer-card');
-            card.classList.add('photographer-card');
-            card.innerHTML = `
-            <article data-photographer-id="${this.id}">
-            <a class="display_none_decoration"  href="photographer.html?id=${this.id}">
-                <img src="data/${this.imageUrl}" alt="${this.name}">
-                <h2>${this.name}</h2>
-                <p>${this.city}, ${this.country}</p>
-                <p>${this.tagline}</p>
-                <p>${this.price} &euro;/par jour</p>
-                </a>
-            </article>   
-            <div class="about_me">
-            </div> 
-            `;
+            card.dataset.photographerId = this.id;
+
+            const figure = document.createElement('figure');
+
+            const link = document.createElement('a');
+            link.classList.add('display_none_decoration');
+            link.href = `photographer.html?id=${this.id}`;
+            link.setAttribute('aria-label', `Voici ${this.name} dans la ville ${this.city}`);
+
+            const image = document.createElement('img');
+            image.src = `data/${this.imageUrl}`;
+            image.alt = `${this.name} - ${this.tagline}`;
+            link.appendChild(image);
+
+            const nameHeading = document.createElement('h2');
+            nameHeading.id = `name-${this.id}`;
+            nameHeading.textContent = this.name;
+
+            const location = document.createElement('p');
+            location.id = `location-${this.id}`;
+            location.textContent = `${this.city}, ${this.country}`;
+
+            const tagline = document.createElement('p');
+            tagline.textContent = this.tagline;
+
+            const price = document.createElement('p');
+            price.textContent = `${this.price} €/par jour`;
+
+            link.appendChild(nameHeading);
+            link.appendChild(location);
+
+            figure.appendChild(link);
+            figure.appendChild(tagline);
+            figure.appendChild(price);
+
+            card.appendChild(figure);
+
+            const aboutMe = document.createElement('div');
+            aboutMe.classList.add('about_me');
+            card.appendChild(aboutMe);
+
             return card;
         },
     };
 }
+
 
 async function displayData(photographers) {
     const photographersSection = document.querySelector('.photographer_section');

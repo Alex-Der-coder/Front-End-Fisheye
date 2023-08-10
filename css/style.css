@@ -66,3 +66,11 @@ height: 350px;
     text-decoration: none;
     color: black;
   }
+
+  .collapse-filters .filter-options {
+    display: none;
+  }
+  
+  .collapse-filters.active .filter-options {
+    display: block;
+  }
