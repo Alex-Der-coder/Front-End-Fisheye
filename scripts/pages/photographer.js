@@ -85,28 +85,42 @@ const photographerAndMedia = await getPhotographerAndMedia(jsonData, photographe
 
 console.log('Photographer:', photographerAndMedia.photographer);
 console.log('Media:', photographerAndMedia.media);
-
 const aboutMeDiv = document.querySelector('.photograph-header');
+const aboutGallery = document.querySelector('.photograph_header_gallery');
+
 aboutMeDiv.innerHTML += `
-<article data-photographer-id="${photographerId}">
-    <img src="data/${photographerAndMedia.photographer.portrait}" alt="${photographerAndMedia.photographer.name}">
+  <article class="about_me" data-photographer-id="${photographerId}">
+    <img class="about_me_img" src="data/${photographerAndMedia.photographer.portrait}" alt="${photographerAndMedia.photographer.name}">
     <h2>${photographerAndMedia.photographer.name}</h2>
-    <p>${photographerAndMedia.photographer.tagline}</p>
-    <p>City: ${photographerAndMedia.photographer.city}</p>
-    <p>Country: ${photographerAndMedia.photographer.country}</p>
+    <p class="location"> ${photographerAndMedia.photographer.city}, ${photographerAndMedia.photographer.country}</p>
+    <p class="talk_about">${photographerAndMedia.photographer.tagline}</p>
   </article>
+  
+`;
+
+aboutGallery.innerHTML += `
+  
   <div class="sort-select">
-  <label for="sort-select">Triez par :</label>
-  <div class="collapse">
-  <button class="filter-button" data-filter="popular"><p>Popularité</p></button>
-  <div>
-  <button class="filter-button" data-filter="recent">Récent</button>
-  <button class="filter-button" data-filter="title">Titre</button>
+  <label for="sortSelect">Triez par :</label>
+  <div class="custom-dropdown">
+    <button class="dropdown-button">Sélectionnez une option   <span class="chevron"></span> </button>
+    <ul class="dropdown-list">
+      <li><a href="#" data-value="popular">Popularité</a></li>
+      <li><a href="#" data-value="recent">Date</a></li>
+      <li><a href="#" data-value="title">Titre</a></li>
+    </ul>
   </div>
-</div>
 </div>
   <div class="gallery">
   </div>
+  <div class="lightbox">
+    <span class="lightbox-close-btn">&times;</span>
+    <button class="lightbox-prev-btn">&#10094;</button>
+    <button class="lightbox-next-btn">&#10095;</button>
+    <div class="lightbox-content"></div>
+</div>
+
+</div>
 `;
 
 const photographerPortrait = document.querySelector(`[data-photographer-id="${photographerId}"] img`);
@@ -156,6 +170,11 @@ function createImageElement(media) {
   figureElement.appendChild(imgElement);
   figureElement.appendChild(figCaptionElement);
   figureElement.appendChild(likesElement);
+
+  /* add event listener for open lightbox */
+  imgElement.addEventListener('click', () => {
+    openLightbox(media.image, media.title);
+});
   
   return figureElement;
 }
@@ -184,56 +203,174 @@ function createVideoElement(media) {
   figureElement.appendChild(videoElement);
   figureElement.appendChild(sourceElement);
   figureElement.appendChild(figCaptionElement);
+
+  /* add event listener for open lightbox */
+
+  videoElement.addEventListener('click', () => {
+    openLightbox(media.video, media.title);
+});
   
   return figureElement;
 }
 
+  photographerPortrait.setAttribute('aria-label', `${photographerAndMedia.photographer.name}'s portrait`);
 
+  photographerAndMedia.media.forEach(media => {
+    if (media.hasOwnProperty('image')) {
+      const imgElement = createImageElement(media);
+      galleryDiv.appendChild(imgElement);
+    } else if (media.hasOwnProperty('video')) {
+      const videoElement = createVideoElement(media);
+      galleryDiv.appendChild(videoElement);
+    }
+  });
+
+  let currentMediaIndex = 0;
+  let lightboxContent = document.querySelector('.lightbox-content');
+
+  function openLightbox(mediaPath, mediaTitle) {
+    const lightbox = document.querySelector('.lightbox');
   
-// Associez une fonction à chaque bouton de filtre
-const filterButtons = document.querySelectorAll('.filter-button');
+  
 
-// Associez une fonction à chaque bouton de filtre
-filterButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    const filter = button.getAttribute('data-filter');
+    const lightboxPrevBtn = document.querySelector('.lightbox-prev-btn');
+    const lightboxNextBtn = document.querySelector('.lightbox-next-btn');
 
-    let sortedMedia;
+    lightboxPrevBtn.addEventListener('click', () => {
+        navigateMedia(-1); // Passer à l'image précédente
+    });
 
-    if (filter === 'popular') {
-      sortedMedia = sortByPopularity(photographerAndMedia.media);
-    } else if (filter === 'recent') {
-      sortedMedia = sortByRecent(photographerAndMedia.media);
-    } else if (filter === 'title') {
-      sortedMedia = sortByTitle(photographerAndMedia.media);
+    lightboxNextBtn.addEventListener('click', () => {
+        navigateMedia(1); // Passer à l'image suivante
+    });
+
+    
+
+    lightboxContent.innerHTML = '';  // Nettoyer le contenu précédent
+
+    if (mediaPath.includes('.mp4')) {
+        const videoElement = document.createElement('video');
+        videoElement.src = `assets/thumbnail/${mediaPath}`;
+        videoElement.controls = true;
+        lightboxContent.appendChild(videoElement);
     } else {
-      sortedMedia = photographerAndMedia.media;
+        const imgElement = document.createElement('img');
+        imgElement.src = `assets/thumbnail/${mediaPath}`;
+        imgElement.alt = mediaTitle;
+        lightboxContent.appendChild(imgElement);
     }
 
-    // Videz la galerie actuelle et ajoutez les éléments triés
-    galleryDiv.innerHTML = '';
-    sortedMedia.forEach(media => {
-      if (media.hasOwnProperty('image')) {
-        const imgElement = createImageElement(media);
-        galleryDiv.appendChild(imgElement);
-      } else if (media.hasOwnProperty('video')) {
-        const videoElement = createVideoElement(media);
-        galleryDiv.appendChild(videoElement);
-      }
+    lightbox.style.display = 'flex';
+
+    const lightboxCloseBtn = document.querySelector('.lightbox-close-btn');
+    lightboxCloseBtn.addEventListener('click', () => {
+        lightbox.style.display = 'none';
     });
-  });
-});
+}
 
+function navigateMedia(direction) {
+  currentMediaIndex += direction;
+  if (currentMediaIndex < 0) {
+      currentMediaIndex = photographerAndMedia.media.length - 1;
+  } else if (currentMediaIndex >= photographerAndMedia.media.length) {
+      currentMediaIndex = 0;
+  }
 
+  const media = photographerAndMedia.media[currentMediaIndex];
+  
+  if (media.hasOwnProperty('image')) {
+      const imgElement = createImageElement(media);
+      lightboxContent.innerHTML = ''; // Nettoyer le contenu précédent
+      lightboxContent.appendChild(imgElement);
+  } else if (media.hasOwnProperty('video')) {
+      const videoElement = createVideoElement(media);
+      lightboxContent.innerHTML = ''; // Nettoyer le contenu précédent
+      lightboxContent.appendChild(videoElement);
+  }
 }
 
 
 
 
+  const dropdownButton = document.querySelector(".dropdown-button");
+  const dropdownList = document.querySelector(".dropdown-list");
+  const dropdownItems = document.querySelectorAll(".dropdown-list a");
+  const chevron = document.querySelector(".chevron"); // Sélectionnez l'élément chevron
+
+  
 
 
 
+  // Cacher la liste déroulante au chargement initial
+  dropdownList.style.display = "none";
+  
+  // Fonction pour inverser le chevron
+  function toggleChevron() {
+    chevron.classList.toggle("rotate"); // Ajoute ou retire la classe rotate
+  }
+  
+  // Inverser le chevron initial au chargement de la page
+  toggleChevron();
+  dropdownButton.addEventListener("click", function() {
+    dropdownList.style.display = dropdownList.style.display === "none" ? "block" : "none";
+    dropdownList.classList.toggle("open");
+    chevron.classList.toggle("rotate"); // Utilisez directement la classe chevron ici
+  });
+  
 
+
+  // Gérer la sélection d'une option
+  dropdownItems.forEach(item => {
+    item.addEventListener("click", function(event) {
+      event.preventDefault();
+  
+      // Obtenir la valeur de l'option sélectionnée
+      const selectedValue = item.getAttribute("data-value");
+      let sortedMedia;
+  
+      // Trier les médias en fonction de l'option sélectionnée
+      if (selectedValue === "popular") {
+        sortedMedia = sortByPopularity(photographerAndMedia.media);
+      } else if (selectedValue === "recent") {
+        sortedMedia = sortByRecent(photographerAndMedia.media);
+      } else if (selectedValue === "title") {
+        sortedMedia = sortByTitle(photographerAndMedia.media);
+      } else {
+        sortedMedia = photographerAndMedia.media;
+      }
+  
+      // Mettre à jour la galerie avec les médias triés
+      galleryDiv.innerHTML = "";
+      sortedMedia.forEach(media => {
+        if (media.hasOwnProperty("image")) {
+          const imgElement = createImageElement(media);
+          galleryDiv.appendChild(imgElement);
+        } else if (media.hasOwnProperty("video")) {
+          const videoElement = createVideoElement(media);
+          galleryDiv.appendChild(videoElement);
+        }
+      });
+  
+      // Mettre à jour le texte du bouton avec l'option sélectionnée
+      const buttonText = item.textContent;
+      dropdownButton.textContent = buttonText;
+  
+      // Cacher la liste déroulante après la sélection
+      dropdownList.style.display = "none";
+  
+      // Mettre à jour la visibilité des options dans la liste
+      dropdownItems.forEach(option => {
+        option.style.display = option === item ? "none" : "block";
+      });
+    });
+  });
+  
+  // Sélectionner la valeur par défaut (Popularité) et mettre à jour le texte du bouton
+  const defaultItem = document.querySelector(".dropdown-list a[data-value='popular']");
+  const defaultButtonText = defaultItem.textContent;
+  dropdownButton.textContent = defaultButtonText;
+  defaultItem.click();
+}
 
 // Fonction pour trier les médias par popularité (likes)
 function sortByPopularity(mediaArray) {
@@ -251,10 +388,30 @@ return mediaArray.slice().sort((a, b) => a.title.localeCompare(b.title));
 }
 
 
-main();
 
 
+  main();
 
+  $(document).ready(function() {
+    // Lorsque le bouton est cliqué, basculez la classe "open" pour afficher/cacher la liste déroulante
+    $('.dropdown-button').click(function() {
+        $('.custom-dropdown').toggleClass('open');
+    });
+    
+    // Lorsqu'un élément d'option est cliqué, mettez à jour le texte du bouton et fermez la liste déroulante
+    $('.dropdown-list a').click(function() {
+        const selectedOption = $(this).text();
+        $('.dropdown-button').text(selectedOption);
+        $('.custom-dropdown').removeClass('open');
+    });
+    
+    // Fermez la liste déroulante si l'utilisateur clique en dehors de celle-ci
+    $(document).click(function(event) {
+        if (!$(event.target).closest('.custom-dropdown').length) {
+            $('.custom-dropdown').removeClass('open');
+        }
+    });
+});
 
 
 
