@@ -9,14 +9,14 @@
   <title>Fisheye - photographe </title>
 </head>
 <body>
-  <header>
+  <header role="banner">
     <img src="assets/images/logo.png" class="logo" alt='Fisheye Home page' >
   </header>
-  <main id="main" >
+  <main id="main" role="main" >
     <div class="photograph-header">
       <button class="contact_button place_button" onclick="displayModal()">Contactez-moi</button>
     </div>
-    <section class="photograph_header_gallery">
+    <section class="photograph_header_gallery" role="region" aria-label="Photograph Gallery Header" >
     </section>
   </main>
   <div id="contact_modal">
@@ -25,7 +25,7 @@
         <h2>Contactez-moi</h2>
         <img src="assets/icons/close.svg" alt="close contact form" onclick="closeModal()" aria-label="Fermer la fenêtre modale" >
       </header>
-      <form id="contact_form">
+      <form id="contact_form" role="form">
         <div>
           <label for="first_name">Prénom</label>
           <input id="first_name" name="first_name" type="text" aria-label="first_name" >
