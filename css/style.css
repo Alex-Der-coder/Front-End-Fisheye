@@ -58,9 +58,12 @@ object-fit: cover;
 }
 
 .gallery {
+    margin-left: 4%;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Colonnes de 300px de largeur */
-    gap: 25px; /* Espacement entre les images */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+    gap: 62px; 
+    max-width: 1250px;
+    margin-top: 4%;
   }
 
   .display_none_decoration {
@@ -108,6 +111,10 @@ top: 135%;
 position: relative;
 }
 
+.contact_button:hover {
+    background-color: #DB8876;
+    color: black;
+}
 .about_me_img  {
 grid-column: 3 / 3;
 top: -11%;
@@ -123,8 +130,6 @@ grid-template-rows: auto;
 width: 193%;
 }
 
-
-/* Variables */
 :root {
   --background: #e74c3c;
   --select-color: #fff;
@@ -134,12 +139,16 @@ width: 193%;
 }
 
 .sort-select {
-margin-left: 3%;
+margin-left: 7%;
+margin-top: 2%;
+
 }
-/* Styles de base pour le menu déroulant */
+
+
 .custom-dropdown {
     position: relative;
     display: inline-block;
+    width: 100px;
 }
 
 .dropdown-button {
@@ -148,16 +157,32 @@ margin-left: 3%;
     border: none;
     padding: 10px;
     cursor: pointer;
+    width: 100px;
+    border-radius: 5px;
 }
+
+a  {
+color: #fff;
+text-decoration: none;
+font-size: 18px;
+border-top: 2px solid #fff;
+}
+
+.location {
+color : #901C1C;
+}
+
+
 
 .dropdown-list {
     display: none;
     position: absolute;
     background-color: #fff;
-    border: 1px solid #ccc;
+    width: 100%;
     padding: 0;
     list-style: none;
     z-index: 1;
+    margin-top: -12%;
 }
 
 .dropdown-list li {
@@ -169,6 +194,7 @@ color: #fff;
 /* Styles pour afficher la liste déroulante */
 .custom-dropdown.open .dropdown-list {
     display: block;
+    margin-top: -13%;
 }
 .lightbox {
     display: none;
@@ -177,18 +203,18 @@ color: #fff;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: white;
     justify-content: center;
     align-items: center;
     z-index: 1000;
 }
 
-.lightbox-close-btn {
+.close-btn {
     position: absolute;
     top: 20px;
     right: 30px;
     font-size: 30px;
-    color: white;
+    color: #901C1C;
     cursor: pointer;
 }
 
@@ -200,8 +226,10 @@ justify-content: center
 }
 
 
-.lightbox-content img {
-width: 55%;
+.media-container img , .media-container video {
+    width: 765px;
+    height: 40rem;
+    object-fit: contain;
 }
 
 .lightbox-prev-btn,
@@ -209,11 +237,19 @@ width: 55%;
     position: absolute;
     top: 50%;
     font-size: 40px;
-    color: white;
+    color: #901C1C;
     cursor: pointer;
-    z-index: 1001; /* Au-dessus du contenu */
+    z-index: 1001; 
     transform: translateY(-50%);
 }
+
+.lightbox-content > figure > .like-button {
+display: none; 
+}
+
+.lightbox-content > figure > figcaption {
+    margin-left: 3.45%;
+    }
 
 .lightbox-prev-btn {
     left: 20px;

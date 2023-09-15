@@ -76,3 +76,26 @@ form input {
 }
 
 
+.title-likes-container {
+    display: flex;
+    justify-content: space-between;
+    width: 111%;
+    color: #901C1C;
+}
+
+.title-likes-content {
+width: 12%;
+display: flex;
+justify-content: space-around;
+}
+
+.like-button {
+background-color: white;
+border: none;
+}
+
+.title-likes-content_video {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}

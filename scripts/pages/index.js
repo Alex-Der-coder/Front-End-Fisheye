@@ -57,6 +57,9 @@ function photographerTemplate(photographer) {
             const location = document.createElement('p');
             location.id = `location-${this.id}`;
             location.textContent = `${this.city}, ${this.country}`;
+            location.classList.add('location');
+
+
 
             const tagline = document.createElement('p');
             tagline.textContent = this.tagline;

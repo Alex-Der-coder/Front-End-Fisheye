@@ -113,12 +113,17 @@ aboutGallery.innerHTML += `
 </div>
   <div class="gallery">
   </div>
-  <div class="lightbox">
-    <span class="lightbox-close-btn">&times;</span>
-    <button class="lightbox-prev-btn">&#10094;</button>
-    <button class="lightbox-next-btn">&#10095;</button>
-    <div class="lightbox-content"></div>
+  <div class="lightbox" id="lightboxModal">
+  <span class="close-btn" id="closeModal">&times;</span>
+  <button class="lightbox-prev-btn" aria-label="Previous image">❮</button>
+  <button class="lightbox-next-btn" aria-label="Next image">❯</button>  
+  <div class="modal-content">
+    <div class="media-container"></div>
+    <figcaption id="media-title"></figcaption>
+  </div>
 </div>
+
+
 
 </div>
 `;
@@ -145,70 +150,113 @@ photographerAndMedia.media.forEach(media => {
 
 function createImageElement(media) {
   const figureElement = document.createElement('figure');
-  
   const imgElement = document.createElement('img');
   imgElement.src = `assets/thumbnail/${media.image}`;
   imgElement.alt = media.title;
   imgElement.classList.add('thumb');
-  
-  // Ajout des attributs personnalisés à la balise figure
-  figureElement.setAttribute('data-title', media.title);
-  figureElement.setAttribute('data-likes', media.likes);
-  figureElement.setAttribute('data-date', media.date);
-  
-  // Ajout de l'attribut aria-labelledby pour lier le titre et les likes au contenu de l'image
-  imgElement.setAttribute('aria-labelledby', `title-${media.title} likes-${media.title}`);
+  imgElement.setAttribute('aria-label', `${media.title}, closeup view`); 
   
   const figCaptionElement = document.createElement('figcaption');
-  figCaptionElement.id = `title-${media.title}`;
   figCaptionElement.textContent = media.title;
   
+  const titleAndLikesContainer = document.createElement('div');
+  titleAndLikesContainer.classList.add('title-likes-container');
+  
+  const titleAndLikesContent = document.createElement('div');
+  titleAndLikesContent.classList.add('title-likes-content');
+  
   const likesElement = document.createElement('span');
-  likesElement.id = `likes-${media.title}`;
-  likesElement.textContent = `${media.likes} ❤️`;
+  likesElement.textContent = media.likes;
+  likesElement.setAttribute('aria-label', `Likes`); 
+  
+  const likeButton = document.createElement('button');
+  likeButton.classList.add('like-button');
+  likeButton.textContent = '❤️';
+  
+  let isLiked = false;
+  
+  likeButton.addEventListener('click', () => {
+    if (isLiked) {
+      media.likes--;
+    } else {
+      media.likes++;
+    }
+    isLiked = !isLiked;
+    likesElement.textContent = media.likes;
+  });
+  
+  titleAndLikesContent.appendChild(likesElement);
+  titleAndLikesContent.appendChild(likeButton);
+  
+  titleAndLikesContainer.appendChild(figCaptionElement);
+  titleAndLikesContainer.appendChild(titleAndLikesContent);
   
   figureElement.appendChild(imgElement);
-  figureElement.appendChild(figCaptionElement);
-  figureElement.appendChild(likesElement);
+  figureElement.appendChild(titleAndLikesContainer);
 
-  /* add event listener for open lightbox */
   imgElement.addEventListener('click', () => {
-    openLightbox(media.image, media.title);
-});
+    openModal(media.image, media.title);
+  });
   
   return figureElement;
 }
 
 function createVideoElement(media) {
   const figureElement = document.createElement('figure');
-  
   const videoElement = document.createElement('video');
   videoElement.src = `assets/thumbnail/${media.video}`;
   videoElement.alt = media.title;
   videoElement.classList.add('thumb');
   videoElement.controls = true;
+  videoElement.setAttribute('aria-label', `${media.title}, closeup view`); 
   
   const sourceElement = document.createElement('source');
   sourceElement.src = `assets/thumbnail/${media.video}`;
   sourceElement.type = 'video/mp4';
   
-  // Ajout des attributs personnalisés à la balise figure
-  figureElement.setAttribute('data-title', media.title);
-  figureElement.setAttribute('data-likes', media.likes);
-  figureElement.setAttribute('data-date', media.date);
-  
   const figCaptionElement = document.createElement('figcaption');
   figCaptionElement.textContent = media.title;
   
+  const titleAndLikesContainer = document.createElement('div');
+  titleAndLikesContainer.classList.add('title-likes-container');
+  
+  const titleAndLikesContent = document.createElement('div');
+  titleAndLikesContent.classList.add('title-likes-content');
+  
+  const likesElement = document.createElement('span');
+  likesElement.textContent = media.likes;
+  likesElement.setAttribute('aria-label', `Likes`); 
+  
+  const likeButton = document.createElement('button');
+  likeButton.classList.add('like-button');
+  likeButton.textContent = '❤️';
+  likeButton.style.color = '#901C1C'; // Couleur du cœur personnalisée
+  
+  let isLiked = false;
+  
+  likeButton.addEventListener('click', () => {
+    if (isLiked) {
+      media.likes--;
+    } else {
+      media.likes++;
+    }
+    isLiked = !isLiked;
+    likesElement.textContent = media.likes;
+  });
+  
+  titleAndLikesContent.appendChild(likesElement);
+  titleAndLikesContent.appendChild(likeButton);
+  
+  titleAndLikesContainer.appendChild(figCaptionElement);
+  titleAndLikesContainer.appendChild(titleAndLikesContent);
+  
   figureElement.appendChild(videoElement);
   figureElement.appendChild(sourceElement);
-  figureElement.appendChild(figCaptionElement);
-
-  /* add event listener for open lightbox */
+  figureElement.appendChild(titleAndLikesContainer);
 
   videoElement.addEventListener('click', () => {
-    openLightbox(media.video, media.title);
-});
+    openModal(media.video, media.title);
+  });
   
   return figureElement;
 }
@@ -226,70 +274,65 @@ function createVideoElement(media) {
   });
 
   let currentMediaIndex = 0;
-  let lightboxContent = document.querySelector('.lightbox-content');
-
-  function openLightbox(mediaPath, mediaTitle) {
-    const lightbox = document.querySelector('.lightbox');
+ 
+  const lightboxModal = document.getElementById('lightboxModal');
+  const closeModalBtn = document.getElementById('closeModal');
+  const prevBtn = document.querySelector('.lightbox-prev-btn');
+  const nextBtn = document.querySelector('.lightbox-next-btn');
+  const modalMediaContainer = document.querySelector('.media-container');
+  const modalMediaTitle = document.getElementById('media-title');
   
+  function openModal(mediaPath, mediaTitle) {
+    modalMediaContainer.innerHTML = ''; // Nettoyer le contenu précédent
   
-
-    const lightboxPrevBtn = document.querySelector('.lightbox-prev-btn');
-    const lightboxNextBtn = document.querySelector('.lightbox-next-btn');
-
-    lightboxPrevBtn.addEventListener('click', () => {
-        navigateMedia(-1); // Passer à l'image précédente
-    });
-
-    lightboxNextBtn.addEventListener('click', () => {
-        navigateMedia(1); // Passer à l'image suivante
-    });
-
-    
-
-    lightboxContent.innerHTML = '';  // Nettoyer le contenu précédent
-
     if (mediaPath.includes('.mp4')) {
-        const videoElement = document.createElement('video');
-        videoElement.src = `assets/thumbnail/${mediaPath}`;
-        videoElement.controls = true;
-        lightboxContent.appendChild(videoElement);
+      const videoElement = document.createElement('video');
+      videoElement.src = `assets/thumbnail/${mediaPath}`;
+      videoElement.controls = true;
+      modalMediaContainer.appendChild(videoElement);
     } else {
-        const imgElement = document.createElement('img');
-        imgElement.src = `assets/thumbnail/${mediaPath}`;
-        imgElement.alt = mediaTitle;
-        lightboxContent.appendChild(imgElement);
+      const imgElement = document.createElement('img');
+      imgElement.src = `assets/thumbnail/${mediaPath}`;
+      imgElement.alt = mediaTitle;
+      modalMediaContainer.appendChild(imgElement);
     }
-
-    lightbox.style.display = 'flex';
-
-    const lightboxCloseBtn = document.querySelector('.lightbox-close-btn');
-    lightboxCloseBtn.addEventListener('click', () => {
-        lightbox.style.display = 'none';
-    });
-}
-
-function navigateMedia(direction) {
-  currentMediaIndex += direction;
-  if (currentMediaIndex < 0) {
-      currentMediaIndex = photographerAndMedia.media.length - 1;
-  } else if (currentMediaIndex >= photographerAndMedia.media.length) {
-      currentMediaIndex = 0;
-  }
-
-  const media = photographerAndMedia.media[currentMediaIndex];
   
-  if (media.hasOwnProperty('image')) {
-      const imgElement = createImageElement(media);
-      lightboxContent.innerHTML = ''; // Nettoyer le contenu précédent
-      lightboxContent.appendChild(imgElement);
-  } else if (media.hasOwnProperty('video')) {
-      const videoElement = createVideoElement(media);
-      lightboxContent.innerHTML = ''; // Nettoyer le contenu précédent
-      lightboxContent.appendChild(videoElement);
+    modalMediaTitle.textContent = mediaTitle;
+    lightboxModal.style.display = 'flex';
   }
-}
+  
+  closeModalBtn.addEventListener('click', () => {
+    lightboxModal.style.display = 'none';
+  });
+  
+  prevBtn.addEventListener('click', () => {
+    navigateMedia(-1);
+  });
+  
+  nextBtn.addEventListener('click', () => {
+    navigateMedia(1);
+  });
 
-
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') {
+      navigateMedia(-1); // Déplacer vers la gauche
+    } else if (event.key === 'ArrowRight') {
+      navigateMedia(1); // Déplacer vers la droite
+    }
+  });
+  
+  function navigateMedia(direction) {
+    currentMediaIndex += direction;
+  
+    if (currentMediaIndex < 0) {
+      currentMediaIndex = photographerAndMedia.media.length - 1;
+    } else if (currentMediaIndex >= photographerAndMedia.media.length) {
+      currentMediaIndex = 0;
+    }
+  
+    const media = photographerAndMedia.media[currentMediaIndex];
+    openModal(media.image || media.video, media.title);
+  }
 
 
   const dropdownButton = document.querySelector(".dropdown-button");
@@ -298,9 +341,6 @@ function navigateMedia(direction) {
   const chevron = document.querySelector(".chevron"); // Sélectionnez l'élément chevron
 
   
-
-
-
   // Cacher la liste déroulante au chargement initial
   dropdownList.style.display = "none";
   
@@ -389,6 +429,18 @@ return mediaArray.slice().sort((a, b) => a.title.localeCompare(b.title));
 
 
 
+function toggleLike(media, likeButton) {
+  if (media.liked) {
+    media.likes--;
+    media.liked = false;
+  } else {
+    media.likes++;
+    media.liked = true;
+  }
+
+  likeButton.textContent = `${media.likes} ❤️`;
+}
+
 
   main();
 
@@ -412,6 +464,28 @@ return mediaArray.slice().sort((a, b) => a.title.localeCompare(b.title));
         }
     });
 });
+
+
+// Sélectionnez le formulaire par son identifiant
+const contactForm = document.getElementById('contact_form');
+
+// Ajoutez un gestionnaire d'événements à la soumission du formulaire
+contactForm.addEventListener('submit', function (event) {
+  event.preventDefault(); // Empêche le formulaire de se soumettre normalement
+
+  // Récupérez les valeurs du formulaire
+  const firstName = document.getElementById('first_name').value;
+  const lastName = document.getElementById('last_name').value;
+  const email = document.getElementById('email').value;
+  const message = document.getElementById('message').value;
+
+  // Créez une chaîne de caractères contenant toutes les informations
+  const allInfo = `Prénom: ${firstName}, Nom: ${lastName}, Adresse électronique: ${email}, Message: ${message}`;
+
+  // Affichez toutes les informations dans un seul console.log
+  console.log(allInfo);
+});
+
 
 
 
