@@ -1,25 +1,25 @@
 // Function to fetch the photographers data from photographers.json
 function getPhotographers() {
   return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', 'data/photographers.json');
-      xhr.onload = () => {
-          if (xhr.status === 200) {
-              try {
-                  const photographersData = JSON.parse(xhr.responseText);
-                  const photographers = photographersData.photographers;
-                  resolve(photographers);
-              } catch (error) {
-                  reject(error);
-              }
-          } else {
-              reject(new Error('Failed to fetch photographers data.'));
-          }
-      };
-      xhr.onerror = () => {
-          reject(new Error('Failed to fetch photographers data.'));
-      };
-      xhr.send();
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'data/photographers.json');
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        try {
+          const photographersData = JSON.parse(xhr.responseText);
+          const photographers = photographersData.photographers;
+          resolve(photographers);
+        } catch (error) {
+          reject(error);
+        }
+      } else {
+        reject(new Error('Failed to fetch photographers data.'));
+      }
+    };
+    xhr.onerror = () => {
+      reject(new Error('Failed to fetch photographers data.'));
+    };
+    xhr.send();
   });
 }
 
@@ -36,81 +36,96 @@ function filterMediaByPhotographerId(mediaData, photographerId) {
 // Function to get the photographer info based on ID
 function getPhotographerInfo(photographerId) {
   return new Promise((resolve, reject) => {
-      getPhotographers()
-      .then(photographers => {
-          const photographer = photographers.find(p => p.id === parseInt(photographerId));
-          if (photographer) {
-              resolve(photographer);
-          } else {
-              reject(new Error('Photographer not found.'));
-          }
-      })
-      .catch(error => {
-          reject(error);
-      });
+    getPhotographers()
+    .then(photographers => {
+      const photographer = photographers.find(p => p.id === parseInt(photographerId));
+      if (photographer) {
+        resolve(photographer);
+      } else {
+        reject(new Error('Photographer not found.'));
+      }
+    })
+    .catch(error => {
+      reject(error);
+    });
   });
 }
 
 
 async function fetchJsonData() {
-try {
-  const response = await fetch('data/photographers.json'); // Use the correct relative URL
-  const jsonData = await response.json();
-  return jsonData;
-} catch (error) {
-  throw new Error('Error fetching JSON data.');
-}
+  try {
+    const response = await fetch('data/photographers.json'); // Use the correct relative URL
+    const jsonData = await response.json();
+    return jsonData;
+  } catch (error) {
+    throw new Error('Error fetching JSON data.');
+  }
 }
 
 
 
 async function getPhotographerAndMedia(jsonData, photographerId) {
-const photographer = jsonData.photographers.find((p) => p.id === parseInt(photographerId));
-const mediaData = await fetchJsonData(); // Utilisez "await" pour attendre que les données soient récupérées
-const filteredMediaItems = mediaData.media.filter((media) => media.photographerId === parseInt(photographerId));
-
-return {
-  photographer: photographer,
-  media: filteredMediaItems
-};
+  const photographer = jsonData.photographers.find((p) => p.id === parseInt(photographerId));
+  const mediaData = await fetchJsonData(); // Utilisez "await" pour attendre que les données soient récupérées
+  const filteredMediaItems = mediaData.media.filter((media) => media.photographerId === parseInt(photographerId));
+  
+  return {
+    photographer: photographer,
+    media: filteredMediaItems
+  };
 }
 
 
 
 async function main() {
-const jsonData = await fetchJsonData();
-const urlParams = new URLSearchParams(window.location.search);
-const photographerId = urlParams.get('id');
-const photographerAndMedia = await getPhotographerAndMedia(jsonData, photographerId);
-
-console.log('Photographer:', photographerAndMedia.photographer);
-console.log('Media:', photographerAndMedia.media);
-const aboutMeDiv = document.querySelector('.photograph-header');
-const aboutGallery = document.querySelector('.photograph_header_gallery');
-
-aboutMeDiv.innerHTML += `
-  <article class="about_me" data-photographer-id="${photographerId}">
-    <img class="about_me_img" src="data/${photographerAndMedia.photographer.portrait}" alt="${photographerAndMedia.photographer.name}">
-    <h2>${photographerAndMedia.photographer.name}</h2>
-    <p class="location"> ${photographerAndMedia.photographer.city}, ${photographerAndMedia.photographer.country}</p>
-    <p class="talk_about">${photographerAndMedia.photographer.tagline}</p>
-  </article>
+  const jsonData = await fetchJsonData();
+  const urlParams = new URLSearchParams(window.location.search);
+  const photographerId = urlParams.get('id');
+  const photographerAndMedia = await getPhotographerAndMedia(jsonData, photographerId);
   
-`;
-
-aboutGallery.innerHTML += `
+  console.log('Photographer:', photographerAndMedia.photographer);
+  console.log('Media:', photographerAndMedia.media);
+  
+  let totalLikes = 0;
+  
+  // Parcourez le tableau photographerAndMedia.media et additionnez les valeurs de likes
+  for (const item of photographerAndMedia.media) {
+    totalLikes += item.likes;
+  }
+  
+  console.log('Total des likes:', totalLikes);
+  console.log(photographerAndMedia.photographer.price);
+  
+  
+  const aboutMeDiv = document.querySelector('.photograph-header');
+  const aboutGallery = document.querySelector('.photograph_header_gallery');
+  
+  aboutMeDiv.innerHTML += `
+  <article class="about_me" data-photographer-id="${photographerId}">
+  <img class="about_me_img" src="data/${photographerAndMedia.photographer.portrait}" alt="${photographerAndMedia.photographer.name}">
+  <h2>${photographerAndMedia.photographer.name}</h2>
+  <p class="location"> ${photographerAndMedia.photographer.city}, ${photographerAndMedia.photographer.country}</p>
+  <p class="talk_about">${photographerAndMedia.photographer.tagline}</p>
+  </article>
+  <div class="my_job">
+  <p> ${totalLikes} <span>&#x2665</span></p>
+  <p> ${photographerAndMedia.photographer.price} € / jour </p>
+  </div>
+  
+  `;
+  aboutGallery.innerHTML += `
   
   <div class="sort-select">
   <label for="sortSelect">Triez par :</label>
   <div class="custom-dropdown">
-    <button class="dropdown-button">Sélectionnez une option   <span class="chevron"></span> </button>
-    <ul class="dropdown-list">
-      <li><a href="#" data-value="popular">Popularité</a></li>
-      <li><a href="#" data-value="recent">Date</a></li>
-      <li><a href="#" data-value="title">Titre</a></li>
-    </ul>
+  <button class="dropdown-button">Sélectionnez une option   <span class="chevron"></span> </button>
+  <ul class="dropdown-list">
+  <li><a href="#" data-value="popular">Popularité ˄</a></li>
+  <li><a href="#" data-value="recent">Date</a></li>
+  <li><a href="#" data-value="title">Titre</a></li>
+  </ul>
   </div>
-</div>
+  </div>
   <div class="gallery">
   </div>
   <div class="lightbox" id="lightboxModal">
@@ -118,151 +133,25 @@ aboutGallery.innerHTML += `
   <button class="lightbox-prev-btn" aria-label="Previous image">❮</button>
   <button class="lightbox-next-btn" aria-label="Next image">❯</button>  
   <div class="modal-content">
-    <div class="media-container"></div>
-    <figcaption id="media-title"></figcaption>
+  <div class="media-container"></div>
+  <figcaption id="media-title"></figcaption>
   </div>
-</div>
-
-
-
-</div>
-`;
-
-const photographerPortrait = document.querySelector(`[data-photographer-id="${photographerId}"] img`);
-photographerPortrait.setAttribute('aria-label', `${photographerAndMedia.photographer.name}'s portrait`);
-
-
-
-const galleryDiv = document.querySelector('.gallery');
-
-// display array whit img and video
-
-photographerAndMedia.media.forEach(media => {
-  if (media.hasOwnProperty('image')) {
-    const imgElement = createImageElement(media);
-    galleryDiv.appendChild(imgElement);
-  } else if (media.hasOwnProperty('video')) {
-    const videoElement = createVideoElement(media);
-    galleryDiv.appendChild(videoElement);
-  }
-});
-
-
-function createImageElement(media) {
-  const figureElement = document.createElement('figure');
-  const imgElement = document.createElement('img');
-  imgElement.src = `assets/thumbnail/${media.image}`;
-  imgElement.alt = media.title;
-  imgElement.classList.add('thumb');
-  imgElement.setAttribute('aria-label', `${media.title}, closeup view`); 
+  </div>
   
-  const figCaptionElement = document.createElement('figcaption');
-  figCaptionElement.textContent = media.title;
   
-  const titleAndLikesContainer = document.createElement('div');
-  titleAndLikesContainer.classList.add('title-likes-container');
   
-  const titleAndLikesContent = document.createElement('div');
-  titleAndLikesContent.classList.add('title-likes-content');
+  </div>
+  `;
   
-  const likesElement = document.createElement('span');
-  likesElement.textContent = media.likes;
-  likesElement.setAttribute('aria-label', `Likes`); 
-  
-  const likeButton = document.createElement('button');
-  likeButton.classList.add('like-button');
-  likeButton.textContent = '❤️';
-  
-  let isLiked = false;
-  
-  likeButton.addEventListener('click', () => {
-    if (isLiked) {
-      media.likes--;
-    } else {
-      media.likes++;
-    }
-    isLiked = !isLiked;
-    likesElement.textContent = media.likes;
-  });
-  
-  titleAndLikesContent.appendChild(likesElement);
-  titleAndLikesContent.appendChild(likeButton);
-  
-  titleAndLikesContainer.appendChild(figCaptionElement);
-  titleAndLikesContainer.appendChild(titleAndLikesContent);
-  
-  figureElement.appendChild(imgElement);
-  figureElement.appendChild(titleAndLikesContainer);
-
-  imgElement.addEventListener('click', () => {
-    openModal(media.image, media.title);
-  });
-  
-  return figureElement;
-}
-
-function createVideoElement(media) {
-  const figureElement = document.createElement('figure');
-  const videoElement = document.createElement('video');
-  videoElement.src = `assets/thumbnail/${media.video}`;
-  videoElement.alt = media.title;
-  videoElement.classList.add('thumb');
-  videoElement.controls = true;
-  videoElement.setAttribute('aria-label', `${media.title}, closeup view`); 
-  
-  const sourceElement = document.createElement('source');
-  sourceElement.src = `assets/thumbnail/${media.video}`;
-  sourceElement.type = 'video/mp4';
-  
-  const figCaptionElement = document.createElement('figcaption');
-  figCaptionElement.textContent = media.title;
-  
-  const titleAndLikesContainer = document.createElement('div');
-  titleAndLikesContainer.classList.add('title-likes-container');
-  
-  const titleAndLikesContent = document.createElement('div');
-  titleAndLikesContent.classList.add('title-likes-content');
-  
-  const likesElement = document.createElement('span');
-  likesElement.textContent = media.likes;
-  likesElement.setAttribute('aria-label', `Likes`); 
-  
-  const likeButton = document.createElement('button');
-  likeButton.classList.add('like-button');
-  likeButton.textContent = '❤️';
-  likeButton.style.color = '#901C1C'; // Couleur du cœur personnalisée
-  
-  let isLiked = false;
-  
-  likeButton.addEventListener('click', () => {
-    if (isLiked) {
-      media.likes--;
-    } else {
-      media.likes++;
-    }
-    isLiked = !isLiked;
-    likesElement.textContent = media.likes;
-  });
-  
-  titleAndLikesContent.appendChild(likesElement);
-  titleAndLikesContent.appendChild(likeButton);
-  
-  titleAndLikesContainer.appendChild(figCaptionElement);
-  titleAndLikesContainer.appendChild(titleAndLikesContent);
-  
-  figureElement.appendChild(videoElement);
-  figureElement.appendChild(sourceElement);
-  figureElement.appendChild(titleAndLikesContainer);
-
-  videoElement.addEventListener('click', () => {
-    openModal(media.video, media.title);
-  });
-  
-  return figureElement;
-}
-
+  const photographerPortrait = document.querySelector(`[data-photographer-id="${photographerId}"] img`);
   photographerPortrait.setAttribute('aria-label', `${photographerAndMedia.photographer.name}'s portrait`);
-
+  
+  
+  
+  const galleryDiv = document.querySelector('.gallery');
+  
+  // display array whit img and video
+  
   photographerAndMedia.media.forEach(media => {
     if (media.hasOwnProperty('image')) {
       const imgElement = createImageElement(media);
@@ -272,9 +161,136 @@ function createVideoElement(media) {
       galleryDiv.appendChild(videoElement);
     }
   });
-
+  
+  
+  function createImageElement(media) {
+    const figureElement = document.createElement('figure');
+    const imgElement = document.createElement('img');
+    imgElement.src = `assets/thumbnail/${media.image}`;
+    imgElement.alt = media.title;
+    imgElement.classList.add('thumb');
+    imgElement.setAttribute('aria-label', `${media.title}, closeup view`); 
+    
+    const figCaptionElement = document.createElement('figcaption');
+    figCaptionElement.textContent = media.title;
+    
+    const titleAndLikesContainer = document.createElement('div');
+    titleAndLikesContainer.classList.add('title-likes-container');
+    
+    const titleAndLikesContent = document.createElement('div');
+    titleAndLikesContent.classList.add('title-likes-content');
+    
+    const likesElement = document.createElement('span');
+    likesElement.textContent = media.likes;
+    likesElement.setAttribute('aria-label', `Likes`); 
+    
+    const likeButton = document.createElement('button');
+    likeButton.classList.add('like-button');
+    likeButton.textContent = '❤️';
+    
+    let isLiked = false;
+    
+    likeButton.addEventListener('click', () => {
+      if (isLiked) {
+        media.likes--;
+      } else {
+        media.likes++;
+      }
+      isLiked = !isLiked;
+      likesElement.textContent = media.likes;
+    });
+    
+    titleAndLikesContent.appendChild(likesElement);
+    titleAndLikesContent.appendChild(likeButton);
+    
+    titleAndLikesContainer.appendChild(figCaptionElement);
+    titleAndLikesContainer.appendChild(titleAndLikesContent);
+    
+    figureElement.appendChild(imgElement);
+    figureElement.appendChild(titleAndLikesContainer);
+    
+    imgElement.addEventListener('click', () => {
+      openModal(media.image, media.title);
+    });
+    
+    return figureElement;
+  }
+  
+  
+  function createVideoElement(media) {
+    const figureElement = document.createElement('figure');
+    const videoElement = document.createElement('video');
+    videoElement.src = `assets/thumbnail/${media.video}`;
+    videoElement.alt = media.title;
+    videoElement.classList.add('thumb');
+    videoElement.controls = true;
+    videoElement.setAttribute('aria-label', `${media.title}, closeup view`); 
+    
+    const sourceElement = document.createElement('source');
+    sourceElement.src = `assets/thumbnail/${media.video}`;
+    sourceElement.type = 'video/mp4';
+    
+    const figCaptionElement = document.createElement('figcaption');
+    figCaptionElement.textContent = media.title;
+    
+    const titleAndLikesContainer = document.createElement('div');
+    titleAndLikesContainer.classList.add('title-likes-container');
+    
+    const titleAndLikesContent = document.createElement('div');
+    titleAndLikesContent.classList.add('title-likes-content');
+    
+    const likesElement = document.createElement('span');
+    likesElement.textContent = media.likes;
+    likesElement.setAttribute('aria-label', `Likes`); 
+    
+    const likeButton = document.createElement('button');
+    likeButton.classList.add('like-button');
+    likeButton.textContent = '❤️';
+    likeButton.style.color = '#901C1C'; // Couleur du cœur personnalisée
+    
+    let isLiked = false;
+    
+    likeButton.addEventListener('click', () => {
+      if (isLiked) {
+        media.likes--;
+      } else {
+        media.likes++;
+      }
+      isLiked = !isLiked;
+      likesElement.textContent = media.likes;
+    });
+    
+    titleAndLikesContent.appendChild(likesElement);
+    titleAndLikesContent.appendChild(likeButton);
+    
+    titleAndLikesContainer.appendChild(figCaptionElement);
+    titleAndLikesContainer.appendChild(titleAndLikesContent);
+    
+    figureElement.appendChild(videoElement);
+    figureElement.appendChild(sourceElement);
+    figureElement.appendChild(titleAndLikesContainer);
+    
+    videoElement.addEventListener('click', () => {
+      openModal(media.video, media.title);
+    });
+    
+    return figureElement;
+  }
+  
+  photographerPortrait.setAttribute('aria-label', `${photographerAndMedia.photographer.name}'s portrait`);
+  
+  photographerAndMedia.media.forEach(media => {
+    if (media.hasOwnProperty('image')) {
+      const imgElement = createImageElement(media);
+      galleryDiv.appendChild(imgElement);
+    } else if (media.hasOwnProperty('video')) {
+      const videoElement = createVideoElement(media);
+      galleryDiv.appendChild(videoElement);
+    }
+  });
+  
   let currentMediaIndex = 0;
- 
+  
   const lightboxModal = document.getElementById('lightboxModal');
   const closeModalBtn = document.getElementById('closeModal');
   const prevBtn = document.querySelector('.lightbox-prev-btn');
@@ -284,7 +300,7 @@ function createVideoElement(media) {
   
   function openModal(mediaPath, mediaTitle) {
     modalMediaContainer.innerHTML = ''; // Nettoyer le contenu précédent
-  
+    
     if (mediaPath.includes('.mp4')) {
       const videoElement = document.createElement('video');
       videoElement.src = `assets/thumbnail/${mediaPath}`;
@@ -296,7 +312,7 @@ function createVideoElement(media) {
       imgElement.alt = mediaTitle;
       modalMediaContainer.appendChild(imgElement);
     }
-  
+    
     modalMediaTitle.textContent = mediaTitle;
     lightboxModal.style.display = 'flex';
   }
@@ -312,7 +328,7 @@ function createVideoElement(media) {
   nextBtn.addEventListener('click', () => {
     navigateMedia(1);
   });
-
+  
   document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowLeft') {
       navigateMedia(-1); // Déplacer vers la gauche
@@ -323,23 +339,23 @@ function createVideoElement(media) {
   
   function navigateMedia(direction) {
     currentMediaIndex += direction;
-  
+    
     if (currentMediaIndex < 0) {
       currentMediaIndex = photographerAndMedia.media.length - 1;
     } else if (currentMediaIndex >= photographerAndMedia.media.length) {
       currentMediaIndex = 0;
     }
-  
+    
     const media = photographerAndMedia.media[currentMediaIndex];
     openModal(media.image || media.video, media.title);
   }
-
-
+  
+  
   const dropdownButton = document.querySelector(".dropdown-button");
   const dropdownList = document.querySelector(".dropdown-list");
   const dropdownItems = document.querySelectorAll(".dropdown-list a");
   const chevron = document.querySelector(".chevron"); // Sélectionnez l'élément chevron
-
+  
   
   // Cacher la liste déroulante au chargement initial
   dropdownList.style.display = "none";
@@ -357,17 +373,16 @@ function createVideoElement(media) {
     chevron.classList.toggle("rotate"); // Utilisez directement la classe chevron ici
   });
   
-
-
+  
   // Gérer la sélection d'une option
   dropdownItems.forEach(item => {
     item.addEventListener("click", function(event) {
       event.preventDefault();
-  
+      
       // Obtenir la valeur de l'option sélectionnée
       const selectedValue = item.getAttribute("data-value");
       let sortedMedia;
-  
+      
       // Trier les médias en fonction de l'option sélectionnée
       if (selectedValue === "popular") {
         sortedMedia = sortByPopularity(photographerAndMedia.media);
@@ -378,7 +393,7 @@ function createVideoElement(media) {
       } else {
         sortedMedia = photographerAndMedia.media;
       }
-  
+      
       // Mettre à jour la galerie avec les médias triés
       galleryDiv.innerHTML = "";
       sortedMedia.forEach(media => {
@@ -390,14 +405,14 @@ function createVideoElement(media) {
           galleryDiv.appendChild(videoElement);
         }
       });
-  
+      
       // Mettre à jour le texte du bouton avec l'option sélectionnée
       const buttonText = item.textContent;
       dropdownButton.textContent = buttonText;
-  
+      
       // Cacher la liste déroulante après la sélection
       dropdownList.style.display = "none";
-  
+      
       // Mettre à jour la visibilité des options dans la liste
       dropdownItems.forEach(option => {
         option.style.display = option === item ? "none" : "block";
@@ -414,17 +429,17 @@ function createVideoElement(media) {
 
 // Fonction pour trier les médias par popularité (likes)
 function sortByPopularity(mediaArray) {
-return mediaArray.slice().sort((a, b) => b.likes - a.likes);
+  return mediaArray.slice().sort((a, b) => b.likes - a.likes);
 }
 
 // Fonction pour trier les médias par récence (date)
 function sortByRecent(mediaArray) {
-return mediaArray.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+  return mediaArray.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 
 // Fonction pour trier les médias par titre
 function sortByTitle(mediaArray) {
-return mediaArray.slice().sort((a, b) => a.title.localeCompare(b.title));
+  return mediaArray.slice().sort((a, b) => a.title.localeCompare(b.title));
 }
 
 
@@ -437,32 +452,32 @@ function toggleLike(media, likeButton) {
     media.likes++;
     media.liked = true;
   }
-
+  
   likeButton.textContent = `${media.likes} ❤️`;
 }
 
 
-  main();
+main();
 
-  $(document).ready(function() {
-    // Lorsque le bouton est cliqué, basculez la classe "open" pour afficher/cacher la liste déroulante
-    $('.dropdown-button').click(function() {
-        $('.custom-dropdown').toggleClass('open');
-    });
-    
-    // Lorsqu'un élément d'option est cliqué, mettez à jour le texte du bouton et fermez la liste déroulante
-    $('.dropdown-list a').click(function() {
-        const selectedOption = $(this).text();
-        $('.dropdown-button').text(selectedOption);
-        $('.custom-dropdown').removeClass('open');
-    });
-    
-    // Fermez la liste déroulante si l'utilisateur clique en dehors de celle-ci
-    $(document).click(function(event) {
-        if (!$(event.target).closest('.custom-dropdown').length) {
-            $('.custom-dropdown').removeClass('open');
-        }
-    });
+$(document).ready(function() {
+  // Lorsque le bouton est cliqué, basculez la classe "open" pour afficher/cacher la liste déroulante
+  $('.dropdown-button').click(function() {
+    $('.custom-dropdown').toggleClass('open');
+  });
+  
+  // Lorsqu'un élément d'option est cliqué, mettez à jour le texte du bouton et fermez la liste déroulante
+  $('.dropdown-list a').click(function() {
+    const selectedOption = $(this).text();
+    $('.dropdown-button').text(selectedOption);
+    $('.custom-dropdown').removeClass('open');
+  });
+  
+  // Fermez la liste déroulante si l'utilisateur clique en dehors de celle-ci
+  $(document).click(function(event) {
+    if (!$(event.target).closest('.custom-dropdown').length) {
+      $('.custom-dropdown').removeClass('open');
+    }
+  });
 });
 
 
@@ -472,20 +487,18 @@ const contactForm = document.getElementById('contact_form');
 // Ajoutez un gestionnaire d'événements à la soumission du formulaire
 contactForm.addEventListener('submit', function (event) {
   event.preventDefault(); // Empêche le formulaire de se soumettre normalement
-
+  
   // Récupérez les valeurs du formulaire
   const firstName = document.getElementById('first_name').value;
   const lastName = document.getElementById('last_name').value;
   const email = document.getElementById('email').value;
   const message = document.getElementById('message').value;
-
+  
   // Créez une chaîne de caractères contenant toutes les informations
   const allInfo = `Prénom: ${firstName}, Nom: ${lastName}, Adresse électronique: ${email}, Message: ${message}`;
-
+  
   // Affichez toutes les informations dans un seul console.log
   console.log(allInfo);
 });
-
-
 
 
