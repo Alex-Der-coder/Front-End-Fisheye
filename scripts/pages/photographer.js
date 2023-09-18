@@ -120,10 +120,17 @@ async function main() {
   <div class="custom-dropdown">
   <button class="dropdown-button">Sélectionnez une option   <span class="chevron"></span> </button>
   <ul class="dropdown-list">
-  <li><a href="#" data-value="popular">Popularité ˄</a></li>
-  <li><a href="#" data-value="recent">Date</a></li>
-  <li><a href="#" data-value="title">Titre</a></li>
-  </ul>
+  <li>
+    <a href="#" data-value="popular" aria-label="Order by Popularité">Popularité ˄</a>
+  </li>
+  <li>
+    <a href="#" data-value="recent" aria-label="Order by Date">Date</a>
+  </li>
+  <li>
+    <a href="#" data-value="title" aria-label="Order by Titre">Titre</a>
+  </li>
+</ul>
+
   </div>
   </div>
   <div class="gallery">

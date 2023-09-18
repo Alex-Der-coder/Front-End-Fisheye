@@ -107,6 +107,14 @@ form input {
     position: relative;
 }
 
+.my_job > p:nth-child(1) {
+    margin-left: -34%;
+    }
+
+    .my_job > p:nth-child(2) {
+        margin-right: -18%;
+        }
+
 
 .gallery > figure:nth-child(6) {
     order: 1;
