@@ -85,6 +85,11 @@ async function main() {
   
   console.log('Photographer:', photographerAndMedia.photographer);
   console.log('Media:', photographerAndMedia.media);
+
+
+  const modalHeader = document.querySelector("#contact_modal header h2");
+  modalHeader.textContent = `Contactez-moi ${photographerAndMedia.photographer.name}`;
+  
   
   let totalLikes = 0;
   
@@ -328,6 +333,23 @@ async function main() {
     lightboxModal.style.display = 'none';
   });
   
+
+// Fonction pour fermer le modal
+function fermerModal() {
+  lightboxModal.style.display = 'none';
+}
+
+// Ajoutez un écouteur d'événements pour le bouton de fermeture du modal
+closeModalBtn.addEventListener('click', fermerModal);
+
+// Ajoutez un écouteur d'événements pour la touche "Escape"
+document.addEventListener('keydown', function (event) {
+  if (event.key === 'Escape') {
+    fermerModal();
+  }
+});
+
+  
   prevBtn.addEventListener('click', () => {
     navigateMedia(-1);
   });
@@ -508,4 +530,6 @@ contactForm.addEventListener('submit', function (event) {
   console.log(allInfo);
 });
 
-
+const photographerName = photographerAndMedia.photographer.name;
+const modalHeader = document.querySelector("#contact_modal header h2");
+modalHeader.textContent = `Contactez-moi (${photographerName})`;

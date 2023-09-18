@@ -40,12 +40,13 @@
 
 .modal header img {
     cursor: pointer;
+    margin-bottom: 14%;
 }
 
 .modal header h2 {
     font-size: 64px;
     font-weight: normal;
-    text-align: center;
+    margin-top: 7%;
 }
 
 form {
@@ -53,7 +54,13 @@ form {
     width: 100%;
     flex-direction: column;
     align-items: flex-start;
+    margin-top: 8%;
 }
+
+#message {
+    width: 100%;
+    height: 150px;
+    }
 
 form label {
     color: #312E2E;
