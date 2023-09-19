@@ -132,13 +132,13 @@ async function main() {
   <button class="dropdown-button">Sélectionnez une option   <span class="chevron"></span> </button>
   <ul class="dropdown-list">
   <li>
-    <a href="#" data-value="popular" aria-label="Order by Popularité">Popularité ˄</a>
+    <a href="#" data-value="popular" aria-label="Order by Popularité">Popularité </a>
   </li>
   <li>
-    <a href="#" data-value="recent" aria-label="Order by Date">Date</a>
+    <a href="#" data-value="recent" aria-label="Order by Date">Date </a>
   </li>
   <li>
-    <a href="#" data-value="title" aria-label="Order by Titre">Titre</a>
+    <a href="#" data-value="title" aria-label="Order by Titre">Titre </a>
   </li>
 </ul>
 
@@ -168,8 +168,6 @@ const media = photographerAndMedia.media;
   function createMediaElement(media, mediaType) {
     const figureElement = document.createElement('figure');
 
-   
-    
     let mediaElement;
     if (mediaType === 'image') {
       mediaElement = document.createElement('img');
@@ -301,16 +299,6 @@ galleryDiv.appendChild(videoElement);
     return total;
   }
   
- 
-  
-  // Parcourez le tableau photographerAndMedia.media et additionnez les valeurs de likes
-  for (const item of photographerAndMedia.media) {
-    totalLikes += item.likes;
-  }
-  
-  console.log('Total des likes:', totalLikes);
-
-
 // Fonction pour fermer le modal
 function fermerModal() {
   lightboxModal.style.display = 'none';
@@ -414,7 +402,7 @@ sortedMedia.forEach(media => {
 });
       
       // Mettre à jour le texte du bouton avec l'option sélectionnée
-      const buttonText = item.textContent;
+      const buttonText = item.textContent +  '˄' ;
       dropdownButton.textContent = buttonText;
       
       // Cacher la liste déroulante après la sélection
@@ -469,15 +457,29 @@ main();
 $(document).ready(function() {
   // Lorsque le bouton est cliqué, basculez la classe "open" pour afficher/cacher la liste déroulante
   $('.dropdown-button').click(function() {
-    $('.custom-dropdown').toggleClass('open');
-    $('.chevron').text($('.custom-dropdown').hasClass('open') ? '˅' : '˄');
+    const customDropdown = $('.custom-dropdown');
+    const dropdownButton = $('.dropdown-button');
+    const dropdownList = $('.dropdown-list');
+    
+    customDropdown.toggleClass('open');
+    dropdownList.toggle(); // Affiche ou cache la liste déroulante
+    
+    // Mettez à jour le texte du bouton avec le chevron en fonction de l'état de la liste déroulante
+    const selectedOption = dropdownList.find('a[data-value]:visible').text();
+    const chevron = customDropdown.hasClass('open') ? ' ˅' : ' ˄';
+    dropdownButton.text(selectedOption + chevron);
   });
 
   // Lorsqu'un élément d'option est cliqué, mettez à jour le texte du bouton et fermez la liste déroulante
   $('.dropdown-list a').click(function() {
     const selectedOption = $(this).text();
-    $('.dropdown-button').text(selectedOption + ' ' + ($('.custom-dropdown').hasClass('open') ? '˅' : '˄'));
-    $('.custom-dropdown').removeClass('open');
+    const customDropdown = $('.custom-dropdown');
+    const dropdownButton = $('.dropdown-button');
+    
+    // Mettez à jour le texte du bouton avec le chevron
+    dropdownButton.text(selectedOption + ' ˄');
+    
+    customDropdown.removeClass('open');
   });
 
   // Fermez la liste déroulante si l'utilisateur clique en dehors de celle-ci
@@ -487,6 +489,8 @@ $(document).ready(function() {
     }
   });
 });
+
+
 
 // Sélectionnez le formulaire par son identifiant
 const contactForm = document.getElementById('contact_form');
