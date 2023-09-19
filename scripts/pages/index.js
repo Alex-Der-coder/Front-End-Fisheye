@@ -39,6 +39,7 @@ function photographerTemplate(photographer) {
             card.dataset.photographerId = this.id;
 
             const figure = document.createElement('figure');
+            figure.setAttribute('tabindex', '0');
 
             const link = document.createElement('a');
             link.classList.add('display_none_decoration');
