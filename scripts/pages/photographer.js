@@ -83,6 +83,7 @@ async function main() {
   const photographerId = urlParams.get('id');
   const photographerAndMedia = await getPhotographerAndMedia(jsonData, photographerId);
   
+  
   console.log('Photographer:', photographerAndMedia.photographer);
   console.log('Media:', photographerAndMedia.media);
 
@@ -91,12 +92,16 @@ async function main() {
   modalHeader.textContent = `Contactez-moi ${photographerAndMedia.photographer.name}`;
   
   
-  let totalLikes = 0;
-  
-  // Parcourez le tableau photographerAndMedia.media et additionnez les valeurs de likes
-  for (const item of photographerAndMedia.media) {
-    totalLikes += item.likes;
+  function calculateTotalLikes(mediaArray) {
+    let total = 0;
+    for (const item of mediaArray) {
+      total += item.likes;
+    }
+    return total;
   }
+  
+  let totalLikes = calculateTotalLikes(photographerAndMedia.media);
+
   
   console.log('Total des likes:', totalLikes);
   console.log(photographerAndMedia.photographer.price);
@@ -113,7 +118,7 @@ async function main() {
   <p class="talk_about">${photographerAndMedia.photographer.tagline}</p>
   </article>
   <div class="my_job">
-  <p> ${totalLikes} <span>&#x2665</span></p>
+  <p id="totalCount">${totalLikes} <span>&#x2665;</span></p>
   <p> ${photographerAndMedia.photographer.price} € / jour </p>
   </div>
   
@@ -158,30 +163,28 @@ async function main() {
   const photographerPortrait = document.querySelector(`[data-photographer-id="${photographerId}"] img`);
   photographerPortrait.setAttribute('aria-label', `${photographerAndMedia.photographer.name}'s portrait`);
   
+const media = photographerAndMedia.media;
+  function createMediaElement(media, mediaType) {
+    const figureElement = document.createElement('figure');
+    
+    let mediaElement;
+    if (mediaType === 'image') {
+      mediaElement = document.createElement('img');
+      mediaElement.src = `assets/thumbnail/${media.image}`;
+    } else if (mediaType === 'video') {
+      mediaElement = document.createElement('video');
+      mediaElement.src = `assets/thumbnail/${media.video}`;
+      mediaElement.controls = true;
   
-  
-  const galleryDiv = document.querySelector('.gallery');
-  
-  // display array whit img and video
-  
-  photographerAndMedia.media.forEach(media => {
-    if (media.hasOwnProperty('image')) {
-      const imgElement = createImageElement(media);
-      galleryDiv.appendChild(imgElement);
-    } else if (media.hasOwnProperty('video')) {
-      const videoElement = createVideoElement(media);
-      galleryDiv.appendChild(videoElement);
+      const sourceElement = document.createElement('source');
+      sourceElement.src = `assets/thumbnail/${media.video}`;
+      sourceElement.type = 'video/mp4';
+      mediaElement.appendChild(sourceElement);
     }
-  });
-  
-  
-  function createImageElement(media) {
-    const figureElement = document.createElement('figure');
-    const imgElement = document.createElement('img');
-    imgElement.src = `assets/thumbnail/${media.image}`;
-    imgElement.alt = media.title;
-    imgElement.classList.add('thumb');
-    imgElement.setAttribute('aria-label', `${media.title}, closeup view`); 
+    
+    mediaElement.alt = media.title;
+    mediaElement.classList.add('thumb');
+    mediaElement.setAttribute('aria-label', `${media.title}, closeup view`);
     
     const figCaptionElement = document.createElement('figcaption');
     figCaptionElement.textContent = media.title;
@@ -194,14 +197,14 @@ async function main() {
     
     const likesElement = document.createElement('span');
     likesElement.textContent = media.likes;
-    likesElement.setAttribute('aria-label', `Likes`); 
+    likesElement.setAttribute('aria-label', `Likes`);
     
     const likeButton = document.createElement('button');
     likeButton.classList.add('like-button');
     likeButton.textContent = '❤️';
     
     let isLiked = false;
-    
+    const likesElementtotal = document.getElementById('totalCount'); // Sélectionnez l'élément avec l'ID "totalCount"
     likeButton.addEventListener('click', () => {
       if (isLiked) {
         media.likes--;
@@ -209,8 +212,17 @@ async function main() {
         media.likes++;
       }
       isLiked = !isLiked;
-      likesElement.textContent = media.likes;
+    
+      // Mettez à jour le compteur totalLikes
+      totalLikes = calculateTotalLikes(photographerAndMedia.media);
+    
+      // Mettez à jour l'affichage du total des likes
+      likesElementtotal.textContent = `${totalLikes} ♥`;
+      likesElement.textContent = `${media.likes}`;
+      console.log('Total des likes:', totalLikes);
     });
+    
+    // La fonction calculateTotalLikes reste la même
     
     titleAndLikesContent.appendChild(likesElement);
     titleAndLikesContent.appendChild(likeButton);
@@ -218,88 +230,29 @@ async function main() {
     titleAndLikesContainer.appendChild(figCaptionElement);
     titleAndLikesContainer.appendChild(titleAndLikesContent);
     
-    figureElement.appendChild(imgElement);
+    figureElement.appendChild(mediaElement);
     figureElement.appendChild(titleAndLikesContainer);
     
-    imgElement.addEventListener('click', () => {
-      openModal(media.image, media.title);
-    });
-    
-    return figureElement;
-  }
-  
-  
-  function createVideoElement(media) {
-    const figureElement = document.createElement('figure');
-    const videoElement = document.createElement('video');
-    videoElement.src = `assets/thumbnail/${media.video}`;
-    videoElement.alt = media.title;
-    videoElement.classList.add('thumb');
-    videoElement.controls = true;
-    videoElement.setAttribute('aria-label', `${media.title}, closeup view`); 
-    
-    const sourceElement = document.createElement('source');
-    sourceElement.src = `assets/thumbnail/${media.video}`;
-    sourceElement.type = 'video/mp4';
-    
-    const figCaptionElement = document.createElement('figcaption');
-    figCaptionElement.textContent = media.title;
-    
-    const titleAndLikesContainer = document.createElement('div');
-    titleAndLikesContainer.classList.add('title-likes-container');
-    
-    const titleAndLikesContent = document.createElement('div');
-    titleAndLikesContent.classList.add('title-likes-content');
-    
-    const likesElement = document.createElement('span');
-    likesElement.textContent = media.likes;
-    likesElement.setAttribute('aria-label', `Likes`); 
-    
-    const likeButton = document.createElement('button');
-    likeButton.classList.add('like-button');
-    likeButton.textContent = '❤️';
-    likeButton.style.color = '#901C1C'; // Couleur du cœur personnalisée
-    
-    let isLiked = false;
-    
-    likeButton.addEventListener('click', () => {
-      if (isLiked) {
-        media.likes--;
-      } else {
-        media.likes++;
+    mediaElement.addEventListener('click', () => {
+      if (mediaType === 'image') {
+        openModal(media.image, media.title);
+      } else if (mediaType === 'video') {
+        openModal(media.video, media.title);
       }
-      isLiked = !isLiked;
-      likesElement.textContent = media.likes;
-    });
-    
-    titleAndLikesContent.appendChild(likesElement);
-    titleAndLikesContent.appendChild(likeButton);
-    
-    titleAndLikesContainer.appendChild(figCaptionElement);
-    titleAndLikesContainer.appendChild(titleAndLikesContent);
-    
-    figureElement.appendChild(videoElement);
-    figureElement.appendChild(sourceElement);
-    figureElement.appendChild(titleAndLikesContainer);
-    
-    videoElement.addEventListener('click', () => {
-      openModal(media.video, media.title);
     });
     
     return figureElement;
   }
+  const galleryDiv = document.querySelector('.gallery');
+  const imgElement = createMediaElement(media, 'image');
+galleryDiv.appendChild(imgElement);
+
+const videoElement = createMediaElement(media, 'video');
+galleryDiv.appendChild(videoElement);
   
   photographerPortrait.setAttribute('aria-label', `${photographerAndMedia.photographer.name}'s portrait`);
   
-  photographerAndMedia.media.forEach(media => {
-    if (media.hasOwnProperty('image')) {
-      const imgElement = createImageElement(media);
-      galleryDiv.appendChild(imgElement);
-    } else if (media.hasOwnProperty('video')) {
-      const videoElement = createVideoElement(media);
-      galleryDiv.appendChild(videoElement);
-    }
-  });
+
   
   let currentMediaIndex = 0;
   
@@ -332,7 +285,24 @@ async function main() {
   closeModalBtn.addEventListener('click', () => {
     lightboxModal.style.display = 'none';
   });
+
+  function calculateTotalLikes(mediaArray) {
+    let total = 0;
+    for (const item of mediaArray) {
+      total += item.likes;
+    }
+    return total;
+  }
   
+ 
+  
+  // Parcourez le tableau photographerAndMedia.media et additionnez les valeurs de likes
+  for (const item of photographerAndMedia.media) {
+    totalLikes += item.likes;
+  }
+  
+  console.log('Total des likes:', totalLikes);
+
 
 // Fonction pour fermer le modal
 function fermerModal() {
@@ -425,15 +395,16 @@ document.addEventListener('keydown', function (event) {
       
       // Mettre à jour la galerie avec les médias triés
       galleryDiv.innerHTML = "";
-      sortedMedia.forEach(media => {
-        if (media.hasOwnProperty("image")) {
-          const imgElement = createImageElement(media);
-          galleryDiv.appendChild(imgElement);
-        } else if (media.hasOwnProperty("video")) {
-          const videoElement = createVideoElement(media);
-          galleryDiv.appendChild(videoElement);
-        }
-      });
+
+sortedMedia.forEach(media => {
+  if (media.hasOwnProperty("image")) {
+    const imgElement = createMediaElement(media, "image");
+    galleryDiv.appendChild(imgElement);
+  } else if (media.hasOwnProperty("video")) {
+    const videoElement = createMediaElement(media, "video");
+    galleryDiv.appendChild(videoElement);
+  }
+});
       
       // Mettre à jour le texte du bouton avec l'option sélectionnée
       const buttonText = item.textContent;
@@ -530,6 +501,4 @@ contactForm.addEventListener('submit', function (event) {
   console.log(allInfo);
 });
 
-const photographerName = photographerAndMedia.photographer.name;
-const modalHeader = document.querySelector("#contact_modal header h2");
-modalHeader.textContent = `Contactez-moi (${photographerName})`;
+
