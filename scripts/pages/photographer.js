@@ -86,8 +86,8 @@ async function main() {
   
   console.log('Photographer:', photographerAndMedia.photographer);
   console.log('Media:', photographerAndMedia.media);
-
-
+  
+  
   const modalHeader = document.querySelector("#contact_modal header h2");
   modalHeader.textContent = `Contactez-moi ${photographerAndMedia.photographer.name}`;
   
@@ -101,7 +101,7 @@ async function main() {
   }
   
   let totalLikes = calculateTotalLikes(photographerAndMedia.media);
-
+  
   
   console.log('Total des likes:', totalLikes);
   console.log(photographerAndMedia.photographer.price);
@@ -132,16 +132,16 @@ async function main() {
   <button class="dropdown-button">Sélectionnez une option   <span class="chevron"></span> </button>
   <ul class="dropdown-list">
   <li>
-    <a href="#" data-value="popular" aria-label="Order by Popularité">Popularité </a>
+  <a href="#" data-value="popular" aria-label="Order by Popularité">Popularité </a>
   </li>
   <li>
-    <a href="#" data-value="recent" aria-label="Order by Date">Date </a>
+  <a href="#" data-value="recent" aria-label="Order by Date">Date </a>
   </li>
   <li>
-    <a href="#" data-value="title" aria-label="Order by Titre">Titre </a>
+  <a href="#" data-value="title" aria-label="Order by Titre">Titre </a>
   </li>
-</ul>
-
+  </ul>
+  
   </div>
   </div>
   <div class="gallery">
@@ -164,10 +164,10 @@ async function main() {
   const photographerPortrait = document.querySelector(`[data-photographer-id="${photographerId}"] img`);
   photographerPortrait.setAttribute('aria-label', `${photographerAndMedia.photographer.name}'s portrait`);
   
-const media = photographerAndMedia.media;
+  const media = photographerAndMedia.media;
   function createMediaElement(media, mediaType) {
     const figureElement = document.createElement('figure');
-
+    
     let mediaElement;
     if (mediaType === 'image') {
       mediaElement = document.createElement('img');
@@ -177,7 +177,7 @@ const media = photographerAndMedia.media;
       mediaElement = document.createElement('video');
       mediaElement.src = `assets/thumbnail/${media.video}`;
       mediaElement.controls = true;
-  
+      
       const sourceElement = document.createElement('source');
       sourceElement.src = `assets/thumbnail/${media.video}`;
       sourceElement.type = 'video/mp4';
@@ -215,10 +215,10 @@ const media = photographerAndMedia.media;
         media.likes++;
       }
       isLiked = !isLiked;
-    
+      
       // Mettez à jour le compteur totalLikes
       totalLikes = calculateTotalLikes(photographerAndMedia.media);
-    
+      
       // Mettez à jour l'affichage du total des likes
       likesElementtotal.textContent = `${totalLikes} ♥`;
       likesElement.textContent = `${media.likes}`;
@@ -248,16 +248,16 @@ const media = photographerAndMedia.media;
   }
   const galleryDiv = document.querySelector('.gallery');
   const imgElement = createMediaElement(media, 'image');
-
-galleryDiv.appendChild(imgElement);
-
-const videoElement = createMediaElement(media, 'video');
-
-galleryDiv.appendChild(videoElement);
+  
+  galleryDiv.appendChild(imgElement);
+  
+  const videoElement = createMediaElement(media, 'video');
+  
+  galleryDiv.appendChild(videoElement);
   
   photographerPortrait.setAttribute('aria-label', `${photographerAndMedia.photographer.name}'s portrait`);
   
-
+  
   
   let currentMediaIndex = 0;
   
@@ -290,7 +290,7 @@ galleryDiv.appendChild(videoElement);
   closeModalBtn.addEventListener('click', () => {
     lightboxModal.style.display = 'none';
   });
-
+  
   function calculateTotalLikes(mediaArray) {
     let total = 0;
     for (const item of mediaArray) {
@@ -299,21 +299,21 @@ galleryDiv.appendChild(videoElement);
     return total;
   }
   
-// Fonction pour fermer le modal
-function fermerModal() {
-  lightboxModal.style.display = 'none';
-}
-
-// Ajoutez un écouteur d'événements pour le bouton de fermeture du modal
-closeModalBtn.addEventListener('click', fermerModal);
-
-// Ajoutez un écouteur d'événements pour la touche "Escape"
-document.addEventListener('keydown', function (event) {
-  if (event.key === 'Escape') {
-    fermerModal();
+  // Fonction pour fermer le modal
+  function fermerModal() {
+    lightboxModal.style.display = 'none';
   }
-});
-
+  
+  // Ajoutez un écouteur d'événements pour le bouton de fermeture du modal
+  closeModalBtn.addEventListener('click', fermerModal);
+  
+  // Ajoutez un écouteur d'événements pour la touche "Escape"
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') {
+      fermerModal();
+    }
+  });
+  
   
   prevBtn.addEventListener('click', () => {
     navigateMedia(-1);
@@ -390,16 +390,16 @@ document.addEventListener('keydown', function (event) {
       
       // Mettre à jour la galerie avec les médias triés
       galleryDiv.innerHTML = "";
-
-sortedMedia.forEach(media => {
-  if (media.hasOwnProperty("image")) {
-    const imgElement = createMediaElement(media, "image");
-    galleryDiv.appendChild(imgElement);
-  } else if (media.hasOwnProperty("video")) {
-    const videoElement = createMediaElement(media, "video");
-    galleryDiv.appendChild(videoElement);
-  }
-});
+      
+      sortedMedia.forEach(media => {
+        if (media.hasOwnProperty("image")) {
+          const imgElement = createMediaElement(media, "image");
+          galleryDiv.appendChild(imgElement);
+        } else if (media.hasOwnProperty("video")) {
+          const videoElement = createMediaElement(media, "video");
+          galleryDiv.appendChild(videoElement);
+        }
+      });
       
       // Mettre à jour le texte du bouton avec l'option sélectionnée
       const buttonText = item.textContent +  '˄' ;
@@ -469,7 +469,7 @@ $(document).ready(function() {
     const chevron = customDropdown.hasClass('open') ? ' ˅' : ' ˄';
     dropdownButton.text(selectedOption + chevron);
   });
-
+  
   // Lorsqu'un élément d'option est cliqué, mettez à jour le texte du bouton et fermez la liste déroulante
   $('.dropdown-list a').click(function() {
     const selectedOption = $(this).text();
@@ -481,7 +481,7 @@ $(document).ready(function() {
     
     customDropdown.removeClass('open');
   });
-
+  
   // Fermez la liste déroulante si l'utilisateur clique en dehors de celle-ci
   $(document).click(function(event) {
     if (!$(event.target).closest('.custom-dropdown').length) {

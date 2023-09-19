@@ -222,9 +222,9 @@ justify-content: center
 
 
 .media-container img , .media-container video {
-    width: 765px;
-    height: 40rem;
-    object-fit: contain;
+    width: 570px;
+  height: 42rem;
+  object-fit: cover;
 }
 
 .lightbox-prev-btn,
@@ -247,11 +247,12 @@ display: none;
     }
 
 .lightbox-prev-btn {
-    left: 20px;
+    left: 20%;
+
 }
 
 .lightbox-next-btn {
-    right: 20px;
+    right:  20%;
 }
 
 .my_job  {
