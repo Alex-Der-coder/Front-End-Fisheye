@@ -127,6 +127,7 @@ async function main() {
   
   <div class="sort-select">
   <label for="sortSelect">Triez par :</label>
+  
   <div class="custom-dropdown">
   <button class="dropdown-button">Sélectionnez une option   <span class="chevron"></span> </button>
   <ul class="dropdown-list">
@@ -166,11 +167,14 @@ async function main() {
 const media = photographerAndMedia.media;
   function createMediaElement(media, mediaType) {
     const figureElement = document.createElement('figure');
+
+   
     
     let mediaElement;
     if (mediaType === 'image') {
       mediaElement = document.createElement('img');
       mediaElement.src = `assets/thumbnail/${media.image}`;
+      figureElement.setAttribute('tabindex', '0');
     } else if (mediaType === 'video') {
       mediaElement = document.createElement('video');
       mediaElement.src = `assets/thumbnail/${media.video}`;
@@ -185,6 +189,7 @@ const media = photographerAndMedia.media;
     mediaElement.alt = media.title;
     mediaElement.classList.add('thumb');
     mediaElement.setAttribute('aria-label', `${media.title}, closeup view`);
+    
     
     const figCaptionElement = document.createElement('figcaption');
     figCaptionElement.textContent = media.title;
@@ -245,9 +250,11 @@ const media = photographerAndMedia.media;
   }
   const galleryDiv = document.querySelector('.gallery');
   const imgElement = createMediaElement(media, 'image');
+
 galleryDiv.appendChild(imgElement);
 
 const videoElement = createMediaElement(media, 'video');
+
 galleryDiv.appendChild(videoElement);
   
   photographerPortrait.setAttribute('aria-label', `${photographerAndMedia.photographer.name}'s portrait`);
@@ -463,15 +470,16 @@ $(document).ready(function() {
   // Lorsque le bouton est cliqué, basculez la classe "open" pour afficher/cacher la liste déroulante
   $('.dropdown-button').click(function() {
     $('.custom-dropdown').toggleClass('open');
+    $('.chevron').text($('.custom-dropdown').hasClass('open') ? '˅' : '˄');
   });
-  
+
   // Lorsqu'un élément d'option est cliqué, mettez à jour le texte du bouton et fermez la liste déroulante
   $('.dropdown-list a').click(function() {
     const selectedOption = $(this).text();
-    $('.dropdown-button').text(selectedOption);
+    $('.dropdown-button').text(selectedOption + ' ' + ($('.custom-dropdown').hasClass('open') ? '˅' : '˄'));
     $('.custom-dropdown').removeClass('open');
   });
-  
+
   // Fermez la liste déroulante si l'utilisateur clique en dehors de celle-ci
   $(document).click(function(event) {
     if (!$(event.target).closest('.custom-dropdown').length) {
@@ -479,7 +487,6 @@ $(document).ready(function() {
     }
   });
 });
-
 
 // Sélectionnez le formulaire par son identifiant
 const contactForm = document.getElementById('contact_form');
