@@ -330,7 +330,10 @@ async function main() {
       navigateMedia(1); // Déplacer vers la droite
     }
   });
-  
+
+
+
+
   function navigateMedia(direction) {
     currentMediaIndex += direction;
     
@@ -343,7 +346,7 @@ async function main() {
     const media = photographerAndMedia.media[currentMediaIndex];
     openModal(media.image || media.video, media.title);
   }
-  
+
   
   const dropdownButton = document.querySelector(".dropdown-button");
   const dropdownList = document.querySelector(".dropdown-list");
@@ -353,6 +356,7 @@ async function main() {
   
   // Cacher la liste déroulante au chargement initial
   dropdownList.style.display = "none";
+  
   
   // Fonction pour inverser le chevron
   function toggleChevron() {
@@ -366,7 +370,6 @@ async function main() {
     dropdownList.classList.toggle("open");
     chevron.classList.toggle("rotate"); // Utilisez directement la classe chevron ici
   });
-  
   
   // Gérer la sélection d'une option
   dropdownItems.forEach(item => {
@@ -420,22 +423,35 @@ async function main() {
   const defaultButtonText = defaultItem.textContent;
   dropdownButton.textContent = defaultButtonText;
   defaultItem.click();
-}
 
+
+}
 // Fonction pour trier les médias par popularité (likes)
 function sortByPopularity(mediaArray) {
-  return mediaArray.slice().sort((a, b) => b.likes - a.likes);
+  const sortedMediaArray = mediaArray.slice().sort((a, b) => b.likes - a.likes);
+  mediaArray = sortedMediaArray; // Met à jour l'objet photographerAndMedia.media
+  console.log(mediaArray); // Affiche l'ordre du tableau trié par popularité
+  return sortedMediaArray;
 }
 
-// Fonction pour trier les médias par récence (date)
+// Fonction pour trier les médias par récence
 function sortByRecent(mediaArray) {
-  return mediaArray.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+  const sortedMediaArray = mediaArray.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+  mediaArray = sortedMediaArray; // Met à jour l'objet photographerAndMedia.media
+  console.log(mediaArray); // Affiche l'ordre du tableau trié par récence
+  return mediaArray;
 }
 
 // Fonction pour trier les médias par titre
 function sortByTitle(mediaArray) {
-  return mediaArray.slice().sort((a, b) => a.title.localeCompare(b.title));
+  const sortedMediaArray = mediaArray.slice().sort((a, b) => a.title.localeCompare(b.title));
+  mediaArray = sortedMediaArray; // Met à jour l'objet photographerAndMedia.media
+  console.log(mediaArray); // Affiche l'ordre du tableau trié par titre
+  return mediaArray;
 }
+
+
+
 
 
 
@@ -511,5 +527,7 @@ contactForm.addEventListener('submit', function (event) {
   // Affichez toutes les informations dans un seul console.log
   console.log(allInfo);
 });
+
+
 
 
