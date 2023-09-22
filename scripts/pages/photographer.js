@@ -87,6 +87,36 @@ async function main() {
   console.log('Photographer:', photographerAndMedia.photographer);
   console.log('Media:', photographerAndMedia.media);
   
+  function sortByPopularity(mediaArray) {
+    const sortedMediaArray =   mediaArray.sort((a, b) => b.likes - a.likes);
+    mediaArray = sortedMediaArray;
+    return sortedMediaArray;
+
+  }
+
+  // Fonction pour trier les médias par récence
+  function sortByRecent(mediaArray) {
+    const sortedMediaArray =   mediaArray.sort((a, b) => new Date(b.date) - new Date(a.date));
+    mediaArray = sortedMediaArray;
+    return sortedMediaArray;
+  }
+
+  // Fonction pour trier les médias par titre
+  function sortByTitle(mediaArray) {
+    const sortedMediaArray =   mediaArray.sort((a, b) => a.title.localeCompare(b.title));
+    mediaArray = sortedMediaArray;
+    return sortedMediaArray;
+  }
+
+  // Utilisez les fonctions pour trier les médias
+  sortByPopularity(photographerAndMedia.media);
+  console.log(photographerAndMedia.media); // Affiche l'ordre du tableau trié par popularité
+
+  sortByRecent(photographerAndMedia.media);
+  console.log(photographerAndMedia.media); // Affiche l'ordre du tableau trié par récence
+
+  sortByTitle(photographerAndMedia.media);
+  console.log(photographerAndMedia.media);
   
   const modalHeader = document.querySelector("#contact_modal header h2");
   modalHeader.textContent = `Contactez-moi ${photographerAndMedia.photographer.name}`;
@@ -332,19 +362,23 @@ async function main() {
   });
 
 
-
-
   function navigateMedia(direction) {
     currentMediaIndex += direction;
-    
+  
     if (currentMediaIndex < 0) {
       currentMediaIndex = photographerAndMedia.media.length - 1;
     } else if (currentMediaIndex >= photographerAndMedia.media.length) {
       currentMediaIndex = 0;
     }
-    
+  
     const media = photographerAndMedia.media[currentMediaIndex];
     openModal(media.image || media.video, media.title);
+  
+    // Afficher la liste du tableau dans la console
+    console.log("Liste de l'ordre de lecture :");
+    photographerAndMedia.media.forEach((media, index) => {
+      console.log(`${index + 1}. ${media.title}`);
+    });
   }
 
   
@@ -371,6 +405,9 @@ async function main() {
     chevron.classList.toggle("rotate"); // Utilisez directement la classe chevron ici
   });
   
+
+  let sortedMedia;
+      
   // Gérer la sélection d'une option
   dropdownItems.forEach(item => {
     item.addEventListener("click", function(event) {
@@ -378,8 +415,7 @@ async function main() {
       
       // Obtenir la valeur de l'option sélectionnée
       const selectedValue = item.getAttribute("data-value");
-      let sortedMedia;
-      
+  
       // Trier les médias en fonction de l'option sélectionnée
       if (selectedValue === "popular") {
         sortedMedia = sortByPopularity(photographerAndMedia.media);
@@ -426,31 +462,6 @@ async function main() {
 
 
 }
-// Fonction pour trier les médias par popularité (likes)
-function sortByPopularity(mediaArray) {
-  const sortedMediaArray = mediaArray.slice().sort((a, b) => b.likes - a.likes);
-  mediaArray = sortedMediaArray; // Met à jour l'objet photographerAndMedia.media
-  console.log(mediaArray); // Affiche l'ordre du tableau trié par popularité
-  return sortedMediaArray;
-}
-
-// Fonction pour trier les médias par récence
-function sortByRecent(mediaArray) {
-  const sortedMediaArray = mediaArray.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
-  mediaArray = sortedMediaArray; // Met à jour l'objet photographerAndMedia.media
-  console.log(mediaArray); // Affiche l'ordre du tableau trié par récence
-  return mediaArray;
-}
-
-// Fonction pour trier les médias par titre
-function sortByTitle(mediaArray) {
-  const sortedMediaArray = mediaArray.slice().sort((a, b) => a.title.localeCompare(b.title));
-  mediaArray = sortedMediaArray; // Met à jour l'objet photographerAndMedia.media
-  console.log(mediaArray); // Affiche l'ordre du tableau trié par titre
-  return mediaArray;
-}
-
-
 
 
 
